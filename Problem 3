@@ -1,0 +1,81 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int n, m, q;
+vector<vector<int>> g;
+vector<pair<int, int>> vis;
+vector<int> cc;
+
+void dfs(int node, int num)
+{
+    vis[node].first = 1;
+    vis[node].second = num;
+    cc[vis[node].second]++;
+    for (auto v : g[node])
+    {
+        if (!vis[v].first)
+        {
+            dfs(v, num);
+        
+        }
+    }
+}
+
+void solve()
+{
+    cin >> n >> m >> q;
+    int num = 0;
+    g.resize(n + 1);
+    vis.resize(n + 1);
+    cc.resize(n + 1);
+
+    for (int i = 0; i < m; i++)
+    {
+        int a, b;
+        cin >> a >> b;
+        g[a].push_back(b);
+        g[b].push_back(a);
+    }
+
+    for (int i = 1; i <= n; i++)
+    {
+        if (!vis[i].first)
+        {
+            num++;
+            dfs(i, num);
+            
+        }
+    }
+    
+    while (q--)
+    {
+        int x;
+        cin >> x;
+        if (x == 1)
+        {
+            int y;
+            int cnt=0;
+            cin >> y;
+           
+            cout<<cc[vis[y].second]<<endl;
+        }
+        if (x == 2)
+        {
+            int y, z;
+            cin >> y >> z;
+            if (vis[y].second==vis[z].second)
+            {
+                cout << "YES\n";
+            }
+            else
+            {
+                cout << "NO\n";
+            }
+        }
+    }
+}
+
+int main()
+{
+    solve();
+}
