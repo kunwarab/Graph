@@ -1,0 +1,90 @@
+#define MP make_pair
+#define F first
+#define S second
+
+using ii = pair<int,int>;
+
+
+int n,m,k;
+vector<vector<pair<int,ii>>> g;
+int c[1001];
+
+using state = pair<int,int>;
+
+int dist[1001][1001];
+int vis[1001][1001];
+
+
+void dijkstra(state st){
+    for(int i=0;i<=n;i++)for(int j=0;j<=k;j++){
+        dist[i][j]=1e9;
+        vis[i][j] = 0;
+    }
+    
+    priority_queue<pair<int,state>> pq;
+    
+    dist[st.F][st.S] = 0;
+    pq.push(MP(-0,st));
+    
+    while(!pq.empty()){
+        auto val = pq.top();pq.pop();
+        int cur_dist = -val.F;
+        int cur_state = val.S;
+        
+        // check visited
+        if(visited[cur_state.F][cur_state.S]==1)continue;
+        visited[cur_state.F][cur_state.S]=1;
+        // -- very crucial.
+        
+        // try and go to neighbour
+        for(auto v:g[cur_state.F]){
+            
+            // pre-condition
+            if(cur_state.S>=v.S.F){
+                
+                // relax dijkstra
+                if(!vis[v.F][cur_state.S-v.S.F] && dist[v.F][cur_state.S-v.S.F]>cur_dist+(0)){
+                    dist[v.F][cur_state.S-v.S.F] = cur_dist+(0);
+                    pq.push(MP(-dist[v.F][cur_state.S-v.S.F],MP(v.F,cur_state.S-v.S.F)));
+                }
+                
+            }
+        }
+        
+        // refill
+        
+        // relax dijkstra
+        if(!vis[cur_state.F][cur_state.S+1] && dist[cur_state.F][cur_state.S+1]>cur_dist+c[cur_state.F]){
+            dist[cur_state.F][cur_state.S+1] = cur_dist+c[cur_state.F];
+            pq.push( MP(-dist[cur_state.F][cur_state.S+1], MP(cur_state.F,cur_state.S+1) ) );
+        }
+        
+    }
+        
+}
+
+
+void solve(){
+    
+    cin>>n>>m>>k;
+    g.resize(n+1);
+    
+    for(int i=1;i<=n;i++)cin>>c[i];
+    
+    int st_node = 1 ,en_node = n;
+    
+    for(int i=0;i<m;i++){
+        int p,d;
+        int a,b;cin>>a>>b;
+        cin>>p>>d;
+        g[a].push_back(MP(b,MP(p,d)));
+        g[b].push_back(MP(a,MP(p,d)));
+    }
+    
+    
+    state st = {st_node,0};
+    dijkstra(st);
+    
+    cout<<dist[en_node][0]<<endl;
+    
+}
